@@ -20,14 +20,14 @@ namespace Lista.Controllers
 
 
 
-        [HttpPost("cadastrar/tarefa")]
+        [HttpPost("cadastrar")]
         public IActionResult CadastraUsuario(Tarefa tarefa)
         {
-            var usuario = HttpContext.Session.GetString("UsuarioLogado");
+            var usuariologado = HttpContext.Session.GetString("IdLogado");
 
-            if (usuario == null)
+            if (usuariologado == null)
                 return Unauthorized("Não Autenticado");
-            var Id = Request.Cookies["Usuario"];
+            var Id = Request.Cookies["UsuarioLogado"];
             if (Id != null)
                 tarefa.IdUsuario = int.Parse(Id);
 
@@ -39,9 +39,9 @@ namespace Lista.Controllers
         [HttpPut("{id}")]
         public IActionResult AtualizaTarefa(int id, Tarefa tarefa)
         {
-            var usuario = HttpContext.Session.GetString("UsuarioLogado");
+            var usuariologado = HttpContext.Session.GetString("IdLogado");
 
-            if (usuario == null)
+            if (usuariologado == null)
                 return Unauthorized("Não Autenticado");
             var tarefadoBanco = _context.Tarefa.Find(id);
             if (tarefadoBanco == null)
@@ -58,9 +58,9 @@ namespace Lista.Controllers
         [HttpDelete("{id}")]
         public IActionResult DeletarTarefa(int id)
         {
-            var usuario = HttpContext.Session.GetString("UsuarioLogado");
+            var usuariologado = HttpContext.Session.GetString("IdLogado");
 
-            if (usuario == null)
+            if (usuariologado == null)
                 return Unauthorized("Não Autenticado");
 
             var tarefadoBanco = _context.Tarefa.Find(id);
@@ -71,25 +71,33 @@ namespace Lista.Controllers
             return Ok("Excluido com sucesso");
         }
 
-        [HttpGet("Tarefa/{IdUsuario}")]
-        public IActionResult ReservasCliente(int tarefa)
+        [HttpGet]
+        public IActionResult BuscarTarefasUsuario()
         {
-            var resultado = from u in _context.Usuario
+            var usuariologado = HttpContext.Session.GetString("IdLogado");
+
+            if (usuariologado == null)
+                return Unauthorized("Faça login antes!");
+
+            var idUsuarioLogado = Request.Cookies["IdLogado"];
+             if(idUsuarioLogado == null)
+            {    
+                        var Lista = from u in _context.Usuario
                             join t in _context.Tarefa
                             on u.Id equals t.IdUsuario
-                            where t.IdUsuario == u.Id
+                            where t.Id == int.Parse(idUsuarioLogado)
                             select new
                             {
-                                Usuario = u.Nome,
-                                u.Email,
-                                Tarefa = t.Descricao,
-                                t.Status,
-                                t.IdUsuario
+                                Usuario = u.Nome, u.Email,
+                                Tarefa = t.Descricao, t.Status,
                             };
-            return Ok(resultado.ToList());
+                
+                return Ok(Lista.ToList());
+            }
+            return Unauthorized("Faça login antes!");
         }
 
-
+            
 
 
 

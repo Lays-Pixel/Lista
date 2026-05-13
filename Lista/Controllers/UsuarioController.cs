@@ -47,21 +47,7 @@ namespace Lista.Controllers
             _context.SaveChanges();
             return Created("", usuario);
         }
-       
-
-        [HttpDelete("{id}")]
-        public IActionResult DeletarDados(int id)
-        {
-
-            var usuariodoBanco = _context.Usuario.Find(id);
-            if (usuariodoBanco == null)
-                return NotFound("Pessoa não encontrada");
-            _context.Remove(usuariodoBanco);
-            _context.SaveChanges();
-            return Ok("Excluido com sucesso");
-
-
-        }
+                                                                                                    
 
         [HttpPut("{id}")]
         public IActionResult AtualizaUsuario(int id, Usuario usuario) 
