@@ -25,7 +25,16 @@ namespace Lista.Controllers
 
             HttpContext.Session.SetString("UsuarioLogado", usuariodoBanco[0].Id.ToString() );
 
-            Response.Cookies.Append("UsuarioLogado", usuariodoBanco[0].Id.ToString());
+            Response.Cookies.Append("UsuarioLogado", usuariodoBanco[0].Id.ToString(),
+                new CookieOptions
+                {
+                    Expires = DateTime.Now.AddMinutes(30),
+                    Secure = true,
+                    HttpOnly = true,
+                    SameSite = SameSiteMode.None
+                });
+
+
             return Ok("Usuário Logado com sucesso!");
 
         }

@@ -7,7 +7,7 @@ namespace Lista.Data
         
         public DbSet<Usuario> Usuario { get; set; }
 
-        public DbSet<Tarefa> Tarefa { get; set; }
+        public DbSet<Tarefa> Tarefas { get; set; }
 
         public ListaContext(DbContextOptions<ListaContext> options) : base(options) { }
 

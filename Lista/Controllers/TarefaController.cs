@@ -23,7 +23,7 @@ namespace Lista.Controllers
         [HttpPost("cadastrar")]
         public IActionResult CadastraUsuario(Tarefa tarefa)
         {
-            var usuariologado = HttpContext.Session.GetString("IdLogado");
+            var usuariologado = HttpContext.Session.GetString("UsuarioLogado");
 
             if (usuariologado == null)
                 return Unauthorized("Não Autenticado");
@@ -39,16 +39,16 @@ namespace Lista.Controllers
         [HttpPut("{id}")]
         public IActionResult AtualizaTarefa(int id, Tarefa tarefa)
         {
-            var usuariologado = HttpContext.Session.GetString("IdLogado");
+            var usuariologado = HttpContext.Session.GetString("UsuarioLogado");
 
             if (usuariologado == null)
                 return Unauthorized("Não Autenticado");
-            var tarefadoBanco = _context.Tarefa.Find(id);
+            var tarefadoBanco = _context.Tarefas.Find(id);
             if (tarefadoBanco == null)
                 return NotFound("Tarefa não encontrado");
             tarefadoBanco.Descricao = tarefa.Descricao;
             tarefadoBanco.Status = tarefa.Status;
-            tarefadoBanco.IdUsuario = tarefa.IdUsuario;
+           
 
             _context.SaveChanges();
             return Ok("Atualizado");
@@ -58,12 +58,12 @@ namespace Lista.Controllers
         [HttpDelete("{id}")]
         public IActionResult DeletarTarefa(int id)
         {
-            var usuariologado = HttpContext.Session.GetString("IdLogado");
+            var usuariologado = HttpContext.Session.GetString("UsuarioLogado");
 
             if (usuariologado == null)
                 return Unauthorized("Não Autenticado");
 
-            var tarefadoBanco = _context.Tarefa.Find(id);
+            var tarefadoBanco = _context.Tarefas.Find(id);
             if (tarefadoBanco == null)
                 return NotFound("Pessoa não encontrada");
             _context.Remove(tarefadoBanco);
@@ -74,22 +74,22 @@ namespace Lista.Controllers
         [HttpGet]
         public IActionResult BuscarTarefasUsuario()
         {
-            var usuariologado = HttpContext.Session.GetString("IdLogado");
+            var usuariologado = HttpContext.Session.GetString("UsuarioLogado");
 
             if (usuariologado == null)
                 return Unauthorized("Faça login antes!");
 
-            var idUsuarioLogado = Request.Cookies["IdLogado"];
-             if(idUsuarioLogado == null)
+            var idUsuarioLogado = Request.Cookies["UsuarioLogado"];
+             if(idUsuarioLogado != null)
             {    
                         var Lista = from u in _context.Usuario
-                            join t in _context.Tarefa
+                            join t in _context.Tarefas
                             on u.Id equals t.IdUsuario
-                            where t.Id == int.Parse(idUsuarioLogado)
+                            where u.Id == int.Parse(idUsuarioLogado)
                             select new
                             {
                                 Usuario = u.Nome, u.Email,
-                                Tarefa = t.Descricao, t.Status,
+                                Tarefa = t.Descricao, t.Status, t.Id
                             };
                 
                 return Ok(Lista.ToList());
